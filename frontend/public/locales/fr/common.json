@@ -1,0 +1,77 @@
+{
+  "app": {
+    "title": "PV Monitor",
+    "subtitle": "Surveillance intelligente de panneaux solaires"
+  },
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "energy": "Énergie",
+    "history": "Historique",
+    "maintenance": "Maintenance",
+    "soiling": "Ensablement",
+    "alerts": "Alertes",
+    "reports": "Rapports",
+    "admin": "Administration",
+    "profile": "Profil",
+    "logout": "Déconnexion"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "save": "Sauvegarder",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "export": "Exporter",
+    "import": "Importer",
+    "refresh": "Rafraîchir",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent"
+  },
+  "status": {
+    "clean": "Propre",
+    "warning": "Attention",
+    "critical": "Critique",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "online": "En ligne",
+    "offline": "Hors ligne",
+    "maintenance": "Maintenance"
+  },
+  "units": {
+    "percent": "%",
+    "watt": "W",
+    "kilowatt": "kW",
+    "volt": "V",
+    "ampere": "A",
+    "celsius": "°C",
+    "kwh": "kWh",
+    "wpm2": "W/m²"
+  },
+  "time": {
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "thisWeek": "Cette semaine",
+    "thisMonth": "Ce mois",
+    "thisYear": "Cette année",
+    "last7days": "7 derniers jours",
+    "last30days": "30 derniers jours",
+    "last90days": "3 derniers mois"
+  },
+  "theme": {
+    "light": "Mode clair",
+    "dark": "Mode sombre",
+    "system": "Système"
+  },
+  "language": {
+    "select": "Choisir la langue",
+    "french": "Français",
+    "english": "Anglais",
+    "spanish": "Espagnol"
+  }
+}

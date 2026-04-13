@@ -1,0 +1,78 @@
+
+{
+  "app": {
+    "title": "SMART PV",
+    "subtitle": "Smart Solar Panel Monitoring"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "energy": "Energy",
+    "history": "History",
+    "maintenance": "Maintenance",
+    "soiling": "Soiling",
+    "alerts": "Alerts",
+    "reports": "Reports",
+    "admin": "Admin",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "refresh": "Refresh",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous"
+  },
+  "status": {
+    "clean": "Clean",
+    "warning": "Warning",
+    "critical": "Critical",
+    "active": "Active",
+    "inactive": "Inactive",
+    "online": "Online",
+    "offline": "Offline",
+    "maintenance": "Maintenance"
+  },
+  "units": {
+    "percent": "%",
+    "watt": "W",
+    "kilowatt": "kW",
+    "volt": "V",
+    "ampere": "A",
+    "celsius": "°C",
+    "kwh": "kWh",
+    "wpm2": "W/m²"
+  },
+  "time": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "thisWeek": "This week",
+    "thisMonth": "This month",
+    "thisYear": "This year",
+    "last7days": "Last 7 days",
+    "last30days": "Last 30 days",
+    "last90days": "Last 3 months"
+  },
+  "theme": {
+    "light": "Light mode",
+    "dark": "Dark mode",
+    "system": "System"
+  },
+  "language": {
+    "select": "Choose language",
+    "french": "French",
+    "english": "English",
+    "spanish": "Spanish"
+  }
+}

@@ -1,0 +1,672 @@
+/* frontend/app/globals.css */
+
+/**
+ * ============================================================
+ * STYLES GLOBAUX - PV MONITOR
+ * ============================================================
+ * Ce fichier contient tous les styles globaux de l'application,
+ * avec un design "Eco-Minimalist" basé sur des tons naturels
+ * et des effets neumorphism doux.
+ * 
+ * Structure :
+ * 1. Imports et reset CSS
+ * 2. Thème clair (variables CSS)
+ * 3. Thème sombre (optionnel)
+ * 4. Styles de base (html, body)
+ * 5. Composants Neumorphism (cartes, boutons, inputs)
+ * 6. Animations
+ * 7. Composants spécifiques (badges, KPIs, graphiques)
+ * 8. Éléments d'interface (tableaux, dropdowns, sidebar, topbar)
+ * 9. Responsive Design
+ * ============================================================
+ */
+
+/* ============================================================ */
+/* 1. IMPORTS ET RESET CSS */
+/* ============================================================ */
+
+/* Import des polices : Sora pour les titres, DM Sans pour le texte */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+
+/* Reset CSS : uniformise le comportement sur tous les navigateurs */
+*, *::before, *::after { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
+}
+
+/* ============================================================ */
+/* 2. THÈME CLAIR (DÉFAUT) - VARIABLES CSS */
+/* ============================================================ */
+
+:root {
+  /* ------------------------------------------------------------------ */
+  /* COULEURS DE FOND - Tons naturels et doux */
+  /* ------------------------------------------------------------------ */
+  --bg:       #F8F9FA;      /* Blanc cassé / gris très clair - Fond principal */
+  --surface:  #FFFFFF;       /* Blanc pur - Cartes et éléments de premier plan */
+  --surface2: #F1F3F5;       /* Gris légèrement plus soutenu - Fond secondaire */
+  --border:   #E9ECEF;       /* Bordures très discrètes - Séparations subtiles */
+  
+  /* ------------------------------------------------------------------ */
+  /* COULEURS D'ACCENTUATION - Nature & Écologie */
+  /* ------------------------------------------------------------------ */
+  /* Bleu azur - Représente le ciel, les panneaux */
+  --blue:     #6AB0E6;       
+  --blue-l:   #E8F1FA;       /* Version claire */
+  --blue-d:   #4A90C4;       /* Version foncée */
+  
+  /* Vert forêt - Aspect environnemental, énergie verte */
+  --green:    #74B666;       
+  --green-l:  #EAF3E8;       /* Version claire */
+  --green-d:  #5A9E4A;       /* Version foncée */
+  --green-m:  #8CC084;       /* Version moyenne */
+  
+  /* ------------------------------------------------------------------ */
+  /* COULEURS D'ALERTE - Teintes douces pour les notifications */
+  /* ------------------------------------------------------------------ */
+  --red:      #E67E7E;       /* Rouge doux - Alerte critique */
+  --red-l:    #FCE9E9;       /* Version claire */
+  --amber:    #E6B87E;       /* Orange doux - Alerte warning */
+  --amber-l:  #FEF0E0;       /* Version claire */
+  
+  /* ------------------------------------------------------------------ */
+  /* DONNÉES DE PRODUCTION - Jaune solaire */
+  /* ------------------------------------------------------------------ */
+  --solar:    #FADB7A;       /* Jaune pastel - Production d'énergie */
+  --solar-l:  #FEF5E0;       /* Version claire */
+  
+  /* ------------------------------------------------------------------ */
+  /* COULEURS DE TEXTE - Gris ardoise progressifs */
+  /* ------------------------------------------------------------------ */
+  --text:     #2C3E50;       /* Bleu-gris foncé - Titres, texte principal */
+  --text2:    #5A6B7A;       /* Gris moyen - Texte secondaire */
+  --text3:    #8A9BA8;       /* Gris clair - Texte tertiaire, labels */
+  
+  /* ------------------------------------------------------------------ */
+  /* ALIASES POUR COMPATIBILITÉ AVEC L'ANCIEN SYSTÈME */
+  /* ------------------------------------------------------------------ */
+  --text-2: #5A6B7A;
+  --text-3: #8A9BA8;
+  --surface-2: #F1F3F5;
+  --green-d: #5A9E4A;
+  
+  /* ------------------------------------------------------------------ */
+  /* SOFT UI / NEUMORPHISM - Ombres douces pour effets de relief */
+  /* ------------------------------------------------------------------ */
+  /* Ombre petite - Pour les éléments au repos */
+  --shadow-sm: 4px 4px 8px rgba(174, 192, 210, 0.1),
+               -4px -4px 8px rgba(255, 255, 255, 0.8);
+  
+  /* Ombre moyenne - Pour le hover */
+  --shadow-md: 8px 8px 16px rgba(174, 192, 210, 0.15),
+               -8px -8px 16px rgba(255, 255, 255, 0.9);
+  
+  /* Ombre grande - Pour les cartes en évidence */
+  --shadow-lg: 12px 12px 24px rgba(174, 192, 210, 0.2),
+               -12px -12px 24px rgba(255, 255, 255, 1);
+  
+  /* Ombre intérieure - Pour les éléments enfoncés (inputs, boutons actifs) */
+  --shadow-inset: inset 2px 2px 4px rgba(174, 192, 210, 0.1),
+                  inset -2px -2px 4px rgba(255, 255, 255, 0.8);
+  
+  /* ------------------------------------------------------------------ */
+  /* AUTRES VARIABLES - Rayons et transitions */
+  /* ------------------------------------------------------------------ */
+  --radius:   14px;          /* Rayon principal pour les cartes */
+  --radius-sm: 8px;          /* Petit rayon pour les boutons */
+  --tr:       0.2s ease;     /* Transition standard */
+}
+
+/* ============================================================ */
+/* 3. THÈME SOMBRE (OPTIONNEL) - Activé via class "dark" sur html */
+/* ============================================================ */
+
+html.dark {
+  /* ------------------------------------------------------------------ */
+  /* COULEURS DE FOND - Version sombre */
+  /* ------------------------------------------------------------------ */
+  --bg:       #0E1117;       /* Fond très foncé */
+  --surface:  #1A1C23;       /* Cartes légèrement plus claires */
+  --surface2: #252831;       /* Fond secondaire */
+  --border:   #2F3340;       /* Bordures */
+  
+  /* ------------------------------------------------------------------ */
+  /* COULEURS D'ACCENTUATION - Adaptées au fond sombre */
+  /* ------------------------------------------------------------------ */
+  --green:    #34d47a;       /* Vert plus vif */
+  --green-l:  #1a3a2a;       /* Version claire assombrie */
+  --green-d:  #22c068;       /* Version foncée plus claire */
+  --green-m:  #4caf82;
+  
+  --solar:    #FFD966;       /* Jaune solaire plus vif */
+  --solar-l:  #3a351f;       /* Version claire assombrie */
+  
+  --red:      #ff5b4f;       /* Rouge plus vif */
+  --red-l:    #2a0d0a;       /* Version claire assombrie */
+  
+  --amber:    #f5a623;       /* Orange plus vif */
+  --amber-l:  #2a1e06;       /* Version claire assombrie */
+  
+  --blue:     #5b9cf6;       /* Bleu plus vif */
+  --blue-l:   #0d1e3a;       /* Version claire assombrie */
+  
+  /* ------------------------------------------------------------------ */
+  /* COULEURS DE TEXTE - Inversées pour lisibilité */
+  /* ------------------------------------------------------------------ */
+  --text:     #E8F1F2;       /* Texte principal clair */
+  --text2:    #A0B8C5;       /* Texte secondaire */
+  --text3:    #6C7A8D;       /* Texte tertiaire */
+  
+  /* ------------------------------------------------------------------ */
+  /* ALIASES POUR MODE SOMBRE */
+  /* ------------------------------------------------------------------ */
+  --text-2: #A0B8C5;
+  --text-3: #6C7A8D;
+  --surface-2: #252831;
+  
+  /* ------------------------------------------------------------------ */
+  /* OMBRES - Plus marquées pour le mode sombre */
+  /* ------------------------------------------------------------------ */
+  --shadow-sm: 0 4px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.5);
+  --shadow-inset: inset 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================================ */
+/* 4. STYLES DE BASE - html et body */
+/* ============================================================ */
+
+html, body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.2s ease;
+}
+
+/* ============================================================ */
+/* 5. COMPOSANTS NEUMORPHISM - Effets de relief */
+/* ============================================================ */
+
+/* ------------------------------------------------------------------ */
+/* CARTES NEUMORPHISM */
+/* ------------------------------------------------------------------ */
+.neumorph-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  transition: all 0.2s ease;
+}
+
+.neumorph-card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.neumorph-card:active {
+  box-shadow: var(--shadow-inset);
+}
+
+/* ------------------------------------------------------------------ */
+/* BOUTONS NEUMORPHISM */
+/* ------------------------------------------------------------------ */
+.neumorph-button {
+  background: var(--surface);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text2);
+  font-weight: 500;
+}
+
+.neumorph-button:hover {
+  box-shadow: var(--shadow-md);
+  color: var(--blue);
+}
+
+.neumorph-button:active {
+  box-shadow: var(--shadow-inset);
+}
+
+/* Variante primaire */
+.neumorph-button.primary {
+  background: linear-gradient(145deg, var(--blue-l), var(--surface));
+  color: var(--blue-d);
+}
+
+/* ------------------------------------------------------------------ */
+/* INPUTS NEUMORPHISM */
+/* ------------------------------------------------------------------ */
+.neumorph-input {
+  background: var(--surface2);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  box-shadow: var(--shadow-inset);
+  color: var(--text);
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.neumorph-input:focus {
+  outline: none;
+  box-shadow: inset 3px 3px 6px rgba(174, 192, 210, 0.2),
+              inset -3px -3px 6px rgba(255, 255, 255, 0.9);
+}
+
+/* ------------------------------------------------------------------ */
+/* SCROLLBAR PERSONNALISÉE */
+/* ------------------------------------------------------------------ */
+::-webkit-scrollbar { 
+  width: 4px; 
+  height: 4px; 
+}
+
+::-webkit-scrollbar-track  { 
+  background: var(--surface2); 
+}
+
+::-webkit-scrollbar-thumb  { 
+  background: var(--blue); 
+  border-radius: 99px; 
+}
+
+::-webkit-scrollbar-thumb:hover { 
+  background: var(--blue-d); 
+}
+
+/* ============================================================ */
+/* 6. ANIMATIONS */
+/* ============================================================ */
+
+/* Animation de fondu avec décalage vers le haut */
+@keyframes fadeUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(12px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* Animation de pulsation pour les indicateurs live */
+@keyframes pulse-ring {
+  0% { 
+    transform: scale(1);   
+    opacity: .7; 
+  }
+  100% { 
+    transform: scale(2.2); 
+    opacity: 0; 
+  }
+}
+
+/* Animation de brillance pour les chargements */
+@keyframes shimmer {
+  0% { 
+    background-position: -200% 0; 
+  }
+  100% { 
+    background-position:  200% 0; 
+  }
+}
+
+/* Classes d'animation avec délais progressifs */
+.fade-up { 
+  animation: fadeUp .4s ease both; 
+}
+
+.fade-up-1 { 
+  animation: fadeUp .4s .05s ease both; 
+}
+
+.fade-up-2 { 
+  animation: fadeUp .4s .10s ease both; 
+}
+
+.fade-up-3 { 
+  animation: fadeUp .4s .15s ease both; 
+}
+
+.fade-up-4 { 
+  animation: fadeUp .4s .20s ease both; 
+}
+
+/* ============================================================ */
+/* 7. COMPOSANTS SPÉCIFIQUES */
+/* ============================================================ */
+
+/* ------------------------------------------------------------------ */
+/* BADGES DE STATUT (Clean, Warning, Critical) */
+/* ------------------------------------------------------------------ */
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Variante Clean */
+.status-badge.clean {
+  background: var(--green-l);
+  color: var(--green-d);
+  border-left: 2px solid var(--green);
+}
+
+/* Variante Warning */
+.status-badge.warning {
+  background: var(--amber-l);
+  color: #B87C4A;
+  border-left: 2px solid var(--amber);
+}
+
+/* Variante Critical */
+.status-badge.critical {
+  background: var(--red-l);
+  color: #B85C5C;
+  border-left: 2px solid var(--red);
+}
+
+/* ------------------------------------------------------------------ */
+/* CARTES KPI (Indicateurs de performance) */
+/* ------------------------------------------------------------------ */
+.kpi-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Barre de couleur en haut de la carte */
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--green));
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* STYLES POUR LES GRAPHIQUES RECHARTS */
+/* ------------------------------------------------------------------ */
+
+.recharts-cartesian-grid line {
+  stroke: var(--border) !important;
+  stroke-opacity: 0.5 !important;
+}
+
+.recharts-text {
+  fill: var(--text3) !important;
+  font-size: 10px !important;
+}
+
+.recharts-legend-item-text {
+  color: var(--text2) !important;
+  font-size: 11px !important;
+}
+
+.recharts-tooltip-wrapper {
+  filter: drop-shadow(var(--shadow-md));
+}
+
+.recharts-default-tooltip {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* ============================================================ */
+/* 8. ÉLÉMENTS D'INTERFACE */
+/* ============================================================ */
+
+/* ------------------------------------------------------------------ */
+/* BOUTONS STANDARDS */
+/* ------------------------------------------------------------------ */
+.btn {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--surface);
+  color: var(--text2);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn:hover {
+  box-shadow: var(--shadow-md);
+  color: var(--blue);
+}
+
+.btn:active {
+  box-shadow: var(--shadow-inset);
+}
+
+/* Variante primaire */
+.btn-primary {
+  background: linear-gradient(145deg, var(--blue-l), var(--surface));
+  color: var(--blue-d);
+}
+
+/* Variante danger */
+.btn-danger {
+  background: linear-gradient(145deg, var(--red-l), var(--surface));
+  color: #B85C5C;
+}
+
+/* ------------------------------------------------------------------ */
+/* INPUTS, SELECTS, TEXTAREAS */
+/* ------------------------------------------------------------------ */
+input, select, textarea {
+  background: var(--surface2);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text);
+  box-shadow: var(--shadow-inset);
+  transition: all 0.2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  box-shadow: inset 3px 3px 6px rgba(174, 192, 210, 0.2),
+              inset -3px -3px 6px rgba(255, 255, 255, 0.9);
+}
+
+input::placeholder {
+  color: var(--text3);
+}
+
+/* ------------------------------------------------------------------ */
+/* TABLEAUX */
+/* ------------------------------------------------------------------ */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 9px 13px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 9px 13px;
+  font-size: 12.5px;
+  color: var(--text2);
+  border-bottom: 1px solid var(--border);
+}
+
+tr:hover td {
+  background: var(--surface2);
+}
+
+/* ------------------------------------------------------------------ */
+/* DROPDOWNS (MENUS DÉROULANTS) */
+/* ------------------------------------------------------------------ */
+.dropdown {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 16px;
+  z-index: 999;
+  border: 1px solid var(--border);
+}
+
+/* ------------------------------------------------------------------ */
+/* SIDEBAR (MENU LATÉRAL) */
+/* ------------------------------------------------------------------ */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  box-shadow: 4px 0 16px rgba(174, 192, 210, 0.1);
+}
+
+.sidebar-nav-item {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 2px;
+  color: var(--text2);
+  transition: all 0.2s ease;
+}
+
+.sidebar-nav-item:hover {
+  background: var(--surface2);
+  color: var(--blue);
+}
+
+.sidebar-nav-item.active {
+  background: linear-gradient(145deg, var(--blue-l), var(--surface));
+  color: var(--blue-d);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ------------------------------------------------------------------ */
+/* TOPBAR (BARRE DU HAUT) */
+/* ------------------------------------------------------------------ */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(174, 192, 210, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* ------------------------------------------------------------------ */
+/* INDICATEUR LIVE (CONNEXION EN DIRECT) */
+/* ------------------------------------------------------------------ */
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--green-l);
+  border-radius: 99px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--green-d);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Point animé pour l'indicateur live */
+.live-indicator-dot {
+  position: relative;
+  display: inline-flex;
+  width: 8px;
+  height: 8px;
+}
+
+/* Animation de pulse */
+.live-indicator-dot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--green);
+  opacity: 0.7;
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+
+/* Point central fixe */
+.live-indicator-dot::after {
+  content: '';
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+/* ============================================================ */
+/* 9. RESPONSIVE DESIGN */
+/* ============================================================ */
+
+/* ------------------------------------------------------------------ */
+/* TABLETTE ET MOBILE (< 768px) */
+/* ------------------------------------------------------------------ */
+@media (max-width: 768px) {
+  main {
+    padding: 16px !important;
+  }
+
+  h1 {
+    font-size: 18px !important;
+  }
+
+  /* Grilles : passage de 4/6 colonnes à 2 colonnes */
+  .grid-cols-4, .grid-cols-6 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Conteneurs de tableaux défilables horizontalement */
+  .table-container {
+    overflow-x: auto;
+  }
+
+  /* Éléments masqués sur mobile */
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* PETITS ÉCRANS / TABLETTES (769px - 1024px) */
+/* ------------------------------------------------------------------ */
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Grille à 6 colonnes : passage à 3 colonnes */
+  .grid-cols-6 {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "compilerOptions": {
+    // 🎯 Version cible de JavaScript (ES2017 = ES8)
+    "target": "ES2017",
+    
+    // 📚 Bibliothèques de types disponibles
+    "lib": [
+      "dom",              // APIs du navigateur (window, document, etc.)
+      "dom.iterable",     // Itérateurs DOM (forEach sur NodeList, etc.)
+      "esnext"            // Fonctionnalités JavaScript les plus récentes
+    ],
+    
+    // 🔄 Autoriser les fichiers JavaScript dans le projet
+    "allowJs": true,
+    
+    // ⏩ Ignorer la vérification des types dans les bibliothèques node_modules
+    "skipLibCheck": true,
+    
+    // 🔍 Mode strict TypeScript (recommandé pour éviter les erreurs)
+    "strict": true,
+    
+    // 🚫 Ne pas générer de fichiers de sortie (Next.js gère ça)
+    "noEmit": true,
+    
+    // 🔗 Compatibilité avec les modules CommonJS et ES
+    "esModuleInterop": true,
+    
+    // 📦 Format des modules (ESNext = import/export moderne)
+    "module": "esnext",
+    
+    // 🔧 Résolution des modules (bundler = optimisé pour les bundlers comme Webpack)
+    "moduleResolution": "bundler",
+    
+    // 📁 Permettre l'import de fichiers JSON
+    "resolveJsonModule": true,
+    
+    // 🔒 Vérifier que chaque fichier peut être transpilé indépendamment
+    "isolatedModules": true,
+    
+    // ⚛️ Support JSX pour React (react-jsx = nouvelle transformation React 17+)
+    "jsx": "react-jsx",
+    
+    // ⚡ Compilation incrémentale (plus rapide après la première build)
+    "incremental": true,
+    
+    // 🧩 Plugins TypeScript
+    "plugins": [
+      {
+        "name": "next" // Plugin Next.js pour le support des fonctionnalités spécifiques
+      }
+    ],
+    
+    // 🔗 Alias de chemins (simplifie les imports)
+    "paths": {
+      "@/*": ["./*"] // @/components/... → depuis la racine du projet
+    }
+  },
+  
+  // 📂 Fichiers et dossiers à inclure dans la compilation
+  "include": [
+    "next-env.d.ts",           // Types Next.js générés automatiquement
+    "**/*.ts",                  // Tous les fichiers TypeScript
+    "**/*.tsx",                 // Tous les fichiers TypeScript React
+    ".next/types/**/*.ts",      // Types générés par Next.js (build)
+    ".next/dev/types/**/*.ts",  // Types générés par Next.js (développement)
+    "**/*.mts",                 // Fichiers TypeScript module (.mts)
+    "../app/layout.tsx"         // ⚠️ Chemin relatif vers le layout principal
+, "app/(dashboard)/energie/hooks/useEnergyData"  ],
+  
+  // 📂 Dossiers à exclure de la compilation
+  "exclude": ["node_modules"]
+}
