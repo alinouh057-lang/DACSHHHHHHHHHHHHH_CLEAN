@@ -1,0 +1,408 @@
+# ============================================================
+# ALERTEUR EMAIL - PV MONITOR
+# ============================================================
+# Ce module gère l'envoi automatique d'alertes email lorsque
+# le niveau d'ensablement dépasse les seuils configurés.
+# Il s'exécute en tâche de fond indépendante de l'API principale.
+# ============================================================
+# 
+# 📧 FONCTIONNALITÉS PRINCIPALES :
+# - Surveillance continue des dernières mesures MongoDB
+# - Envoi d'emails HTML formatés pour les alertes Warning et Critical
+# - Gestion des cooldowns pour éviter les notifications en rafale
+# - Support des fuseaux horaires pour les horodatages locaux
+# 
+# ⚠️ SEUILS D'ALERTE (configurables) :
+# - Warning  (≥ 30%) : Recommandation de nettoyage
+# - Critical (≥ 60%) : Nettoyage urgent requis
+# 
+# ⏱️ COOLDOWNS (configurables) :
+# - Warning  : 30 minutes entre deux envois
+# - Critical : 15 minutes entre deux envois
+# 
+# 🌍 GESTION DU TEMPS :
+# - Stockage UTC en base de données
+# - Conversion vers le fuseau horaire de l'utilisateur pour l'affichage
+# - Fuseau par défaut : Afrique/Tunis
+# 
+# 📊 TEMPLATES EMAIL :
+# - Design responsive avec styles CSS intégrés
+# - KPIs : ensablement (%), puissance (W), perte estimée (%)
+# - Actions recommandées selon le niveau d'alerte
+# 
+# 🔄 BOUCLE PRINCIPALE :
+# - Vérification toutes les 60 secondes (configurable)
+# - Connexion MongoDB persistante
+# - Gestion robuste des erreurs
+# 
+# ============================================================
+
+import logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+import asyncio
+import smtplib
+import ssl
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from datetime import datetime, timedelta, timezone
+from motor.motor_asyncio import AsyncIOMotorClient
+from dotenv import load_dotenv
+import os
+import pytz
+
+from config import Config
+from config_manager import get_email_config, get_config
+
+load_dotenv()
+
+# ============================================================
+# 📦 CONFIGURATION DEPUIS LES VARIABLES D'ENVIRONNEMENT
+# ============================================================
+# Configuration depuis Config
+MONGO_URI = Config.MONGO_URI
+DB_NAME = Config.DB_NAME
+CHECK_INTERVAL = Config.CHECK_INTERVAL
+COOLDOWN_WARNING = Config.COOLDOWN_WARNING
+COOLDOWN_CRITICAL = Config.COOLDOWN_CRITICAL
+
+# Fuseau par défaut (sera remplacé par la config utilisateur)
+DEFAULT_TIMEZONE = 'Africa/Tunis'
+
+# CORRECTION: Utiliser datetime.min avec timezone UTC
+# Dictionnaire stockant le timestamp du dernier envoi pour chaque niveau d'alerte
+last_alert: dict[str, datetime] = {
+    "Warning":  datetime.min.replace(tzinfo=timezone.utc),
+    "Critical": datetime.min.replace(tzinfo=timezone.utc),
+}
+
+# ============================================================
+# 🎨 TEMPLATES EMAIL HTML
+# ============================================================
+# ══════════════════════════════════════════════════════════════
+# TEMPLATES EMAIL HTML (inchangés)
+# ══════════════════════════════════════════════════════════════
+
+def html_warning(soiling: float, device: str, power: float, ts: str) -> str:
+    """
+    Génère le template HTML pour une alerte de niveau WARNING
+    - Couleurs orangées (thème warning)
+    - Recommandation : planifier un nettoyage
+    - Perte de rendement estimée
+    """
+    return f"""<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8">
+<style>
+  body {{ font-family: 'Segoe UI', sans-serif; background: #f5f8f5; margin: 0; padding: 0; }}
+  .wrap {{ max-width: 560px; margin: 30px auto; background: #fff;
+           border-radius: 16px; overflow: hidden;
+           box-shadow: 0 4px 24px rgba(13,82,52,.10); }}
+  .header {{ background: linear-gradient(135deg, #c47d0e, #a06508);
+             padding: 28px 32px; color: #fff; }}
+  .header h1 {{ font-size: 22px; margin: 0; font-weight: 700; }}
+  .header p  {{ margin: 6px 0 0; opacity: .85; font-size: 13px; }}
+  .body {{ padding: 28px 32px; }}
+  .kpi-row {{ display: flex; gap: 12px; margin: 18px 0; }}
+  .kpi {{ flex: 1; background: #fef3dc; border-radius: 10px;
+          padding: 14px; text-align: center; border-top: 3px solid #c47d0e; }}
+  .kpi-v {{ font-size: 26px; font-weight: 800; color: #c47d0e; }}
+  .kpi-l {{ font-size: 11px; color: #7aaa88; margin-top: 3px; text-transform: uppercase; }}
+  .tip {{ background: #edf4ed; border-left: 4px solid #1a7f4f;
+          border-radius: 0 10px 10px 0; padding: 14px 16px;
+          font-size: 13px; color: #375e45; margin-top: 20px; }}
+  .footer {{ background: #f5f8f5; padding: 16px 32px;
+             font-size: 11px; color: #7aaa88; text-align: center; }}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>⚠️ Alerte Warning — Ensablement détecté</h1>
+    <p>Système de surveillance PV · {ts}</p>
+  </div>
+  <div class="body">
+    <p style="color:#375e45;font-size:14px;">
+      Le panneau solaire <strong>{device}</strong> présente un niveau d'ensablement
+      qui nécessite votre attention.
+    </p>
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-v">{soiling:.1f}%</div>
+        <div class="kpi-l">Ensablement</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-v">{power:.0f} W</div>
+        <div class="kpi-l">Puissance actuelle</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-v" style="color:#c47d0e">Warning</div>
+        <div class="kpi-l">Niveau alerte</div>
+      </div>
+    </div>
+    <div class="tip">
+      💡 <strong>Recommandation :</strong> Planifier un nettoyage dans les prochains jours.
+      Un ensablement de {soiling:.0f}% entraîne une perte de rendement estimée à
+      <strong>{min(soiling * 0.6, 35):.0f}%</strong>.
+    </div>
+  </div>
+  <div class="footer">PFE Surveillance PV · Alerte automatique · Ne pas répondre à cet email</div>
+</div>
+</body>
+</html>
+"""
+
+def html_critical(soiling: float, device: str, power: float, ts: str) -> str:
+    """
+    Génère le template HTML pour une alerte de niveau CRITICAL
+    - Couleurs rouges (thème urgence)
+    - Recommandation : nettoyage immédiat
+    - Perte de rendement majeure
+    """
+    return f"""<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8">
+<style>
+  body {{ font-family: 'Segoe UI', sans-serif; background: #f5f8f5; margin: 0; padding: 0; }}
+  .wrap {{ max-width: 560px; margin: 30px auto; background: #fff;
+           border-radius: 16px; overflow: hidden;
+           box-shadow: 0 4px 24px rgba(192,57,43,.15); }}
+  .header {{ background: linear-gradient(135deg, #c0392b, #922b21);
+             padding: 28px 32px; color: #fff; }}
+  .header h1 {{ font-size: 22px; margin: 0; font-weight: 700; }}
+  .header p  {{ margin: 6px 0 0; opacity: .85; font-size: 13px; }}
+  .banner {{ background: #fdecea; border: 1.5px solid #c0392b;
+             border-radius: 10px; padding: 14px 18px; margin: 18px 0;
+             font-size: 14px; color: #c0392b; font-weight: 600; }}
+  .body {{ padding: 28px 32px; }}
+  .kpi-row {{ display: flex; gap: 12px; margin: 18px 0; }}
+  .kpi {{ flex: 1; background: #fdecea; border-radius: 10px;
+          padding: 14px; text-align: center; border-top: 3px solid #c0392b; }}
+  .kpi-v {{ font-size: 26px; font-weight: 800; color: #c0392b; }}
+  .kpi-l {{ font-size: 11px; color: #7aaa88; margin-top: 3px; text-transform: uppercase; }}
+  .action {{ background: linear-gradient(135deg, #1a7f4f, #0d5234);
+             border-radius: 10px; padding: 16px 20px; color: #fff;
+             font-size: 14px; margin-top: 20px; }}
+  .action strong {{ font-size: 16px; display: block; margin-bottom: 6px; }}
+  .footer {{ background: #f5f8f5; padding: 16px 32px;
+             font-size: 11px; color: #7aaa88; text-align: center; }}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>🚨 ALERTE CRITIQUE — Nettoyage Urgent</h1>
+    <p>Système de surveillance PV · {ts}</p>
+  </div>
+  <div class="body">
+    <div class="banner">
+      ⛔ Le panneau <strong>{device}</strong> nécessite un nettoyage IMMÉDIAT.
+    </div>
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-v">{soiling:.1f}%</div>
+        <div class="kpi-l">Ensablement</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-v">{power:.0f} W</div>
+        <div class="kpi-l">Puissance actuelle</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-v">~{min(soiling * 0.8, 80):.0f}%</div>
+        <div class="kpi-l">Perte rendement</div>
+      </div>
+    </div>
+    <div class="action">
+      <strong>✅ Action requise immédiatement</strong>
+      Nettoyer le panneau {device} dès que possible.
+      Un ensablement de {soiling:.0f}% bloque la majorité du rayonnement solaire
+      et réduit drastiquement la production d'énergie.
+    </div>
+  </div>
+  <div class="footer">PFE Surveillance PV · Alerte automatique · Ne pas répondre à cet email</div>
+</div>
+</body>
+</html>
+"""
+
+# ============================================================
+# 📤 FONCTION D'ENVOI D'EMAIL
+# ============================================================
+# ══════════════════════════════════════════════════════════════
+# ENVOI EMAIL
+# ══════════════════════════════════════════════════════════════
+
+def send_email(subject: str, html_body: str) -> bool:
+    """
+    Envoie un email HTML en utilisant la configuration dynamique
+    Récupère la configuration email depuis config_manager
+    Gère la connexion SMTP avec TLS
+    Retourne True si succès, False sinon
+    """
+    try:
+        # Récupérer la config email actuelle
+        email_config = get_email_config()
+        
+        email_to = email_config.get("email_to")
+        if not email_to:
+            logger.error("❌ Aucun email destinataire configuré")
+            return False
+            
+        email_from = email_config.get("email_from", Config.EMAIL_FROM)
+        smtp_host = email_config.get("smtp_host", Config.SMTP_HOST)
+        smtp_port = email_config.get("smtp_port", Config.SMTP_PORT)
+        smtp_password = email_config.get("smtp_password", Config.EMAIL_PASS)
+        
+        if not all([smtp_host, smtp_port, email_from, smtp_password]):
+            logger.error("❌ Configuration SMTP incomplète")
+            return False
+
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = subject
+        msg["From"]    = email_from
+        msg["To"]      = email_to
+        msg.attach(MIMEText(html_body, "html", "utf-8"))
+
+        ctx = ssl.create_default_context()
+        with smtplib.SMTP(smtp_host, smtp_port) as smtp:
+            smtp.ehlo()
+            smtp.starttls(context=ctx)
+            smtp.login(email_from, smtp_password)
+            smtp.sendmail(email_from, email_to, msg.as_string())
+
+        logger.info(f"✅ Email envoyé → {email_to} | Sujet : {subject}")
+        return True
+
+    except Exception as e:
+        logger.error(f"❌ Erreur envoi email : {e}")
+        return False
+
+# ============================================================
+# 🔍 VÉRIFICATION DES SEUILS ET ENVOI D'ALERTES
+# ============================================================
+# ══════════════════════════════════════════════════════════════
+# VÉRIFICATION MONGODB (AVEC FUSEAU DYNAMIQUE)
+# ══════════════════════════════════════════════════════════════
+
+async def check_and_alert(collection) -> None:
+    """
+    Lit la dernière mesure MongoDB.
+    Envoie un email si le seuil est dépassé et le cooldown écoulé.
+    
+    Étapes :
+    1. Récupère le dernier document
+    2. Extrait les données (ensablement, puissance, device)
+    3. Convertit le timestamp UTC en heure locale
+    4. Compare avec les seuils configurés
+    5. Vérifie les cooldowns
+    6. Envoie l'email approprié
+    """
+    doc = await collection.find_one({}, sort=[("timestamp", -1)])
+    if not doc:
+        logger.info("ℹ️ Aucune mesure en base.")
+        return
+
+    ai      = doc.get("ai_analysis", {})
+    ed      = doc.get("electrical_data", {})
+    soiling = float(ai.get("soiling_level", 0) or 0)
+    status  = str(ai.get("status", ""))
+    power   = float(ed.get("power_output", 0) or 0)
+    device  = str(doc.get("device_id", "inconnu"))
+    
+    # Récupérer le timestamp
+    ts_raw = doc.get("timestamp", datetime.now(timezone.utc))
+    
+    # Récupérer le fuseau horaire de la config (avec fallback)
+    config = get_config()
+    timezone_str = config.get("timezone", DEFAULT_TIMEZONE)
+    
+    try:
+        user_tz = pytz.timezone(timezone_str)
+    except Exception as e:
+        logger.warning(f"⚠️ Fuseau {timezone_str} invalide, utilisation de {DEFAULT_TIMEZONE}: {e}")
+        user_tz = pytz.timezone(DEFAULT_TIMEZONE)
+    
+    # Convertir UTC en heure locale
+    if isinstance(ts_raw, datetime):
+        if ts_raw.tzinfo is None:
+            ts_raw = ts_raw.replace(tzinfo=timezone.utc)
+        ts_local = ts_raw.astimezone(user_tz)
+    else:
+        ts_local = datetime.now(user_tz)
+    
+    # Formater la date
+    ts_str = ts_local.strftime('%d/%m/%Y %H:%M')
+
+    now = datetime.now(timezone.utc)
+    logger.info(f"🔍 [{now.strftime('%H:%M:%S')} UTC] Device={device} | Ensablement={soiling:.1f}% | Status={status} | Fuseau={timezone_str}")
+
+    # Récupérer les seuils dynamiques
+    seuil_warning = config.get("seuil_warning", Config.SEUIL_WARNING)
+    seuil_critical = config.get("seuil_critical", Config.SEUIL_CRITICAL)
+
+    # ── Critical ──────────────────────────────────────────────
+    if soiling >= seuil_critical or status == "Critical":
+        since = (now - last_alert["Critical"]).total_seconds() / 60
+        if since >= COOLDOWN_CRITICAL:
+            ok = send_email(
+                subject=f"🚨 CRITIQUE — Ensablement {soiling:.0f}% sur {device}",
+                html_body=html_critical(soiling, device, power, ts_str),
+            )
+            if ok:
+                last_alert["Critical"] = now
+                last_alert["Warning"]  = now
+        else:
+            logger.info(f"   ⏳ Critical déjà envoyé il y a {since:.0f}min (cooldown {COOLDOWN_CRITICAL}min)")
+
+    # ── Warning ───────────────────────────────────────────────
+    elif soiling >= seuil_warning or status == "Warning":
+        since = (now - last_alert["Warning"]).total_seconds() / 60
+        if since >= COOLDOWN_WARNING:
+            ok = send_email(
+                subject=f"⚠️ Warning — Ensablement {soiling:.0f}% sur {device}",
+                html_body=html_warning(soiling, device, power, ts_str),
+            )
+            if ok:
+                last_alert["Warning"] = now
+        else:
+            logger.info(f"   ⏳ Warning déjà envoyé il y a {since:.0f}min (cooldown {COOLDOWN_WARNING}min)")
+
+    else:
+        logger.info(f"   ✅ Panneau propre ({soiling:.1f}%) — aucune alerte.")
+
+# ============================================================
+# 🔄 BOUCLE PRINCIPALE ASYNCHRONE
+# ============================================================
+# ══════════════════════════════════════════════════════════════
+# BOUCLE PRINCIPALE
+# ══════════════════════════════════════════════════════════════
+
+async def main():
+    """
+    Fonction principale :
+    - Affiche la configuration au démarrage
+    - Établit la connexion MongoDB
+    - Boucle infinie de vérification
+    """
+    logger.info("=" * 55)
+    logger.info("  PFE — Système d'alertes email")
+    logger.info(f"  From : {Config.EMAIL_FROM}")
+    logger.info(f"  To   : {Config.EMAIL_TO}")
+    logger.info(f"  Vérification toutes les {CHECK_INTERVAL}s")
+    logger.info("=" * 55)
+
+    # Connexion MongoDB
+    client     = AsyncIOMotorClient(MONGO_URI)
+    collection = client[DB_NAME]["surveillance"]
+
+    while True:
+        try:
+            await check_and_alert(collection)
+        except Exception as e:
+            logger.error(f"❌ Erreur boucle : {e}")
+
+        await asyncio.sleep(CHECK_INTERVAL)
+
+if __name__ == "__main__":
+    asyncio.run(main())

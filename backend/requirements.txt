@@ -1,0 +1,52 @@
+# ============================================================
+# DÉPENDANCES PYTHON - PV MONITOR
+# ============================================================
+# Ce fichier liste toutes les dépendances nécessaires pour
+# exécuter le backend de l'application PV Monitor.
+# ============================================================
+# 
+# 🚀 FRAMEWORK WEB
+# ============================================================
+fastapi               # Framework API REST moderne et rapide (asynchrone)
+uvicorn               # Serveur ASGI pour exécuter FastAPI
+
+# ============================================================
+# 🗄️ BASE DE DONNÉES
+# ============================================================
+pymongo               # Driver MongoDB synchrone
+motor                 # Driver MongoDB asynchrone (pour FastAPI)
+
+# ============================================================
+# 🔧 UTILITAIRES
+# ============================================================
+python-dotenv         # Chargement des variables d'environnement depuis .env
+python-multipart      # Support du parsing multipart/form-data (uploads d'images)
+
+# ============================================================
+# 🤖 INTELLIGENCE ARTIFICIELLE
+# ============================================================
+torch                 # PyTorch - Framework deep learning
+torchvision           # Vision par ordinateur (modèles pré-entraînés)
+
+# ============================================================
+# 📷 TRAITEMENT D'IMAGES
+# ============================================================
+opencv-python         # OpenCV - Traitement d'images (lecture, manipulation)
+numpy                 # Calculs numériques et tableaux multidimensionnels
+Pillow                # PIL - Manipulation d'images (format PIL pour torchvision)
+
+# ============================================================
+# 📊 FEATURES CLASSIQUES (ENSABLEMENT)
+# ============================================================
+scikit-image          # Algorithmes avancés (LBP, Gabor, etc.)
+
+# ============================================================
+# 🌐 COMMUNICATION
+# ============================================================
+requests              # Requêtes HTTP (appels API externes)
+
+# ============================================================
+# ✅ VALIDATION DES DONNÉES
+# ============================================================
+pydantic              # Validation des données avec types Python
+email-validator       # Validation des adresses email

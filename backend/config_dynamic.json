@@ -1,0 +1,9 @@
+{
+  "seuil_warning": 30.0,
+  "seuil_critical": 60.0,
+  "retention_days": 1,
+  "cleanup_interval": 1,
+  "timezone": "Africa/Lagos",
+  "latitude": 32.819246,
+  "longitude": 10.474434
+}
