@@ -1,4 +1,40 @@
-// app/(dashboard)/energie/components/LossTable.tsx
+// ============================================================================
+// FICHIER: LossTable.tsx
+// ============================================================================
+// 📌 RÔLE DE CE FICHIER:
+//   Ce composant React affiche un tableau des pertes énergétiques pour
+//   la page Énergie. Il présente les différents niveaux d'ensablement et
+//   leur impact sur la production électrique.
+//
+// 🎨 FONCTIONNALITÉS:
+//   - Tableau à 5 colonnes (Niveau, Label, Perte, Restante, Action)
+//   - Affichage coloré selon le niveau de perte
+//   - Icônes pour chaque niveau
+//   - Lignes alternées avec fond différent pour meilleure lisibilité
+//   - Données statiques depuis LOSS_TABLE constants
+//
+// 📦 PROPS (entrées):
+//   - Aucun (composant autonome avec données statiques)
+//
+// 🎨 COULEURS:
+//   - Utilise les couleurs depuis LOSS_TABLE (vert, orange, rouge)
+//   - C.surface : fond des lignes paires
+//   - C.surface2 : fond des lignes impaires
+//   - C.border : couleur des bordures
+//   - C.text3 : couleur des en-têtes
+//
+// 📊 COLONNES:
+//   - Niveau : identifiant du niveau (L1, L2, etc.)
+//   - Label : description du niveau
+//   - Perte : pourcentage de perte énergétique
+//   - Restante : puissance restante en Watts
+//   - Action : recommandation avec icône
+//
+// 💡 UTILISATION:
+//   <LossTable />
+//
+// ============================================================================
+
 'use client';
 
 import { C } from '@/lib/colors';
