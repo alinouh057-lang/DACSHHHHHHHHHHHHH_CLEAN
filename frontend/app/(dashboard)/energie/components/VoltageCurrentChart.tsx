@@ -1,4 +1,40 @@
-// app/(dashboard)/energie/components/VoltageCurrentChart.tsx
+// ============================================================================
+// FICHIER: VoltageCurrentChart.tsx
+// ============================================================================
+// 📌 RÔLE DE CE FICHIER:
+//   Ce composant React affiche un graphique de la tension et du courant
+//   électrique des panneaux solaires pour la page Énergie. Il montre deux courbes :
+//   - Tension (en bleu, axe gauche)
+//   - Courant (en vert, axe droit)
+//
+// 🎨 FONCTIONNALITÉS:
+//   - Graphique LineChart (Recharts) avec deux lignes
+//   - Double axe Y (gauche pour tension, droite pour courant)
+//   - Axe X avec le temps (heures ou dates)
+//   - Tooltip personnalisé pour afficher les valeurs détaillées
+//   - Grille discrète pour faciliter la lecture
+//   - Message "Données non disponibles" si pas de données
+//
+// 📦 PROPS (entrées):
+//   - data   : tableau d'objets { time, volt, curr }
+//   - height : hauteur du graphique (défaut: 200px)
+//
+// 🎨 COULEURS:
+//   - C.blue  : bleu pour la tension (#1565c0)
+//   - C.green : vert pour le courant (#1a7f4f)
+//   - C.border: gris pour la grille et axes
+//   - C.text3 : gris clair pour les ticks
+//
+// 📊 INTERPRÉTATION:
+//   - Tension stable → fonctionnement normal
+//   - Courant variable → dépend de l'ensoleillement
+//   - Les deux courbes suivent généralement la même tendance
+//
+// 💡 UTILISATION:
+//   <VoltageCurrentChart data={voltageCurrentData} height={250} />
+//
+// ============================================================================
+
 'use client';
 
 import {

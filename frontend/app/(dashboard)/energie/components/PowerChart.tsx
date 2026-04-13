@@ -1,4 +1,47 @@
-// app/(dashboard)/energie/components/PowerChart.tsx
+// ============================================================================
+// FICHIER: PowerChart.tsx
+// ============================================================================
+// 📌 RÔLE DE CE FICHIER:
+//   Ce composant React affiche un graphique comparatif de la puissance
+//   électrique des panneaux solaires pour la page Énergie. Il montre trois courbes :
+//   - Puissance réelle mesurée (ligne verte)
+//   - Puissance théorique calculée (ligne bleue)
+//   - Perte due à l'ensablement (aire orange)
+//   L'écart entre les deux représente la perte due à l'ensablement.
+//
+// 🎨 FONCTIONNALITÉS:
+//   - Graphique ComposedChart (Recharts) avec aire + lignes
+//   - Trois séries de données (réelle, théorique, perte)
+//   - Légende personnalisée avec LegendDot
+//   - Axe X avec le temps (heures ou dates)
+//   - Axe Y avec unité "W"
+//   - Tooltip personnalisé pour afficher les valeurs détaillées
+//   - Grille discrète pour faciliter la lecture
+//   - Message "Aucune donnée disponible" si pas de données
+//   - État de chargement optionnel
+//
+// 📦 PROPS (entrées):
+//   - data   : tableau d'objets { time, power, pth, loss }
+//   - loading: booléen - true pendant le chargement des données
+//   - height : hauteur du graphique (défaut: 280px)
+//
+// 🎨 COULEURS:
+//   - C.green : vert pour la puissance réelle (#1a7f4f)
+//   - C.blue  : bleu pour la puissance théorique (#1565c0)
+//   - C.amber : orange pour la perte (#c47d0e)
+//   - C.border: gris pour la grille et axes
+//   - C.text3 : gris clair pour les ticks
+//
+// 📊 INTERPRÉTATION:
+//   - Écart important → ensablement élevé (nettoyage recommandé)
+//   - Courbes proches → panneau propre
+//   - Puissance théorique > réelle = perte normale due à l'ensablement
+//
+// 💡 UTILISATION:
+//   <PowerChart data={powerData} loading={false} height={300} />
+//
+// ============================================================================
+
 'use client';
 
 import {

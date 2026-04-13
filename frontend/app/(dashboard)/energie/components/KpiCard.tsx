@@ -1,4 +1,43 @@
-// app/(dashboard)/energie/components/KpiCard.tsx
+// ============================================================================
+// FICHIER: KpiCard.tsx
+// ============================================================================
+// 📌 RÔLE DE CE FICHIER:
+//   Ce composant React affiche une carte d'indicateur clé de performance (KPI)
+//   pour la page Énergie. Chaque carte présente une métrique importante
+//   comme la puissance, l'énergie produite, les pertes, etc.
+//
+// 🎨 FONCTIONNALITÉS:
+//   - Affichage d'une icône personnalisée (Lucide React)
+//   - Valeur principale en grand format (ex: "45.2")
+//   - Unité associée (ex: "%", "W", "kWh")
+//   - Label descriptif (ex: "Puissance moyenne")
+//   - Ligne colorée en haut selon la métrique
+//   - Design épuré et moderne
+//
+// 📦 PROPS (entrées):
+//   - icon        : Composant icône (Lucide) - REQUIS
+//   - label       : Texte descriptif (ex: "Puissance moyenne") - REQUIS
+//   - value       : Valeur à afficher (ex: "45.2") - REQUIS
+//   - unit        : Unité de mesure (ex: "%", "W", "kWh") - REQUIS
+//   - accentColor : Couleur d'accentuation (ex: "#1a7f4f") - REQUIS
+//
+// 🎨 THÈME:
+//   - Utilise les couleurs globales depuis '@/lib/colors'
+//   - C.surface : fond de la carte
+//   - C.border  : couleur de bordure
+//   - C.text    : couleur du texte principal
+//
+// 📊 EXEMPLE D'UTILISATION:
+//   <KpiCard
+//     icon={Zap}
+//     label="Puissance moyenne"
+//     value="125.3"
+//     unit="W"
+//     accentColor="#1a7f4f"
+//   />
+//
+// ============================================================================
+
 'use client';
 
 import { C } from '@/lib/colors';
